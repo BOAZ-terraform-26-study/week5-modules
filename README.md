@@ -1,6 +1,7 @@
 # Week 5. 모듈화 (prod 지향) `[대면]`
 
-> 📘 **[이번 주 강의자료(핸즈온 워크북) PDF »](./lecture/강의자료.pdf)** — 실습은 이 문서를 위에서 아래로 따라가며 진행합니다.
+> 📘 **[개념 워크북 »](./lecture/개념워크북.md)** · **[실습 워크북 »](./lecture/실습워크북.md)**
+> 개념 워크북은 예습용입니다. 실습은 실습 워크북을 위에서 아래로 따라가며 진행합니다.
 
 > 이번 주가 끝나면: **반복 코드를 재사용 모듈로 추출하고, `envs/prod`에서 모듈을 조합해 환경을 구성할 수 있다.**
 
@@ -29,15 +30,18 @@
 | 10~55분 | 실습 45분 | network/compute 모듈 추출 -> envs/prod에서 조합 |
 | 55~60분 | 마무리 | 과제③ 브리핑, 6주차 예고 |
 
-## 4. 실습 개요 — 폴더 구조
+## 4. 실습 개요: 폴더 구조
 ```
 practice/
  ├─ modules/
  │   ├─ network/   # VPC, subnet(for_each), IGW, route
  │   └─ compute/   # SG, EC2
  └─ envs/
-     └─ prod/      # module "network" + module "compute" 조합, backend.tf
+     └─ prod/      # module "network" + module "compute" 조합
+                   # provider · backend · variables · locals 는 여기에만 둡니다
 ```
+`backend.tf` 의 `key` 는 `week05/prod/terraform.tfstate` 이고, 버킷과 잠금 테이블은 week3 에서 만든 것을 그대로 씁니다.
+
 `envs/prod/main.tf`:
 ```hcl
 module "network" {
@@ -64,9 +68,10 @@ terraform destroy
 
 ## 5. 체크포인트 (DoD)
 - [ ] network/compute 모듈로 분리됨 (provider는 root에만)
-- [ ] `envs/prod`에서 module 조합으로 apply 성공
+- [ ] `envs/prod`에서 module 조합으로 apply 성공. `plan` 이 `Plan: 9 to add, 0 to change, 0 to destroy.`
+- [ ] `terraform state list` 가 10줄이고 모든 줄이 `module.` 로 시작
 - [ ] module output이 root output으로 재노출됨
-- [ ] **`destroy` 완료 확인**
+- [ ] **`destroy` 완료 확인** (`Destroy complete! Resources: 9 destroyed.`)
 
 ## 6. 트러블슈팅 FAQ
 | 증상 | 원인 | 해결 |
