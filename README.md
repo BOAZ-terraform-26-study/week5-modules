@@ -3,12 +3,12 @@
 > 📘 **[개념 워크북 »](./lecture/개념워크북.md)** · **[실습 워크북 »](./lecture/실습워크북.md)**
 > 개념 워크북은 예습용입니다. 실습은 실습 워크북을 위에서 아래로 따라가며 진행합니다.
 
-> 이번 주가 끝나면: **반복 코드를 재사용 모듈로 추출하고, `envs/prod`에서 모듈을 조합해 환경을 구성할 수 있다.**
+> 이번 주가 끝나면 반복 코드를 재사용 모듈로 추출하고, `envs/prod`에서 모듈을 조합해 환경을 구성할 수 있습니다.
 
 ## 0. 메타 정보
 | 항목 | 내용 |
 |------|------|
-| 일시 | 2026-MM-DD · 60분 |
+| 일시 | 2026-08-26 · 60분 |
 | 방식 | **대면** |
 | 선행 | week4 완료 |
 | 산출물 | 실습 PR + 워크북 · **과제③ 출제** |
@@ -27,7 +27,7 @@
 | 시간 | 구성 | 내용 |
 |------|------|------|
 | 0~10분 | 회고 | 랜덤 지목 |
-| 10~55분 | 실습 45분 | network/compute 모듈 추출 -> envs/prod에서 조합 |
+| 10~55분 | 실습 45분 | network/compute 모듈 추출 -> envs/prod에서 조합. 개념 설명은 따로 떼지 않고 Block A 워크스루(18분) 안에서 함께 짚습니다 |
 | 55~60분 | 마무리 | 과제③ 브리핑, 6주차 예고 |
 
 ## 4. 실습 개요: 폴더 구조
@@ -62,9 +62,12 @@ module "compute" {
 ```
 ```bash
 cd practice/envs/prod
-terraform init && terraform apply
+terraform init
+terraform plan       # Plan: 9 to add  <- 다른 숫자면 apply 하지 말고 멈춤
+terraform apply
 terraform destroy
 ```
+`plan` 이 `9 to add` 인지 보는 것이 이번 주의 안전 게이트입니다. `backend.tf` 의 `key` 가 지난 주 값이면 지난 주 state 를 인수하는데, `backend` 블록에는 변수도 검사도 넣을 수 없어서 이 확인이 유일한 방어선입니다. 실습워크북 B-4.
 
 ## 5. 체크포인트 (DoD)
 - [ ] network/compute 모듈로 분리됨 (provider는 root에만)
@@ -72,11 +75,13 @@ terraform destroy
 - [ ] `terraform state list` 가 10줄이고 모든 줄이 `module.` 로 시작
 - [ ] module output이 root output으로 재노출됨
 - [ ] **`destroy` 완료 확인** (`Destroy complete! Resources: 9 destroyed.`)
+- [ ] `terraform state list` 가 빈 출력이고, 계정 쪽 조회(EC2 · EBS · EIP · NAT) 네 개도 빈 출력
+- [ ] week3 의 S3 버킷과 DynamoDB 테이블은 지우지 않았음 (7주차까지 유지)
 
 ## 6. 트러블슈팅 FAQ
 | 증상 | 원인 | 해결 |
 |------|------|------|
-| 모듈 바꿨는데 반영 안 됨 | init 안 함 | 모듈 변경 후 `terraform init` 재실행 |
+| 모듈 추가했는데 반영 안 됨 | init 안 함 | `module` 블록 추가·삭제 또는 `source` 변경 후 `terraform init` 재실행. 모듈 안 `main.tf` 만 고쳤으면 필요 없습니다 |
 | `source` not found | 경로 오타 | 상대경로 확인 (`../../modules/...`) |
 | 리팩터링 시 리소스 재생성 | 주소 변경 | `moved` 블록 사용 (또는 학습용이니 destroy 후 재apply) |
 

@@ -192,7 +192,9 @@ BOAZ 테라폼 스터디 강의자료(`lecture/개념워크북.md`, `lecture/실
 
 ---
 
-> 이 리포에는 `lecture/build-pdf.sh` 와 `lecture/style.css` 가 아직 없습니다. PDF 배포본이 필요해지면 week4 리포에서 두 파일을 가져와 기본 `TARGETS` 를 `개념워크북 실습워크북` 으로 두고 쓰세요. 그때 이 절의 인쇄 CSS 규칙 셋을 그대로 지킵니다.
+> `lecture/build-pdf.sh` 와 `lecture/style.css` 가 리포에 있습니다. `.md` 를 고쳤으면 리포 루트에서 `./lecture/build-pdf.sh` 를 돌려 PDF 를 다시 뽑으세요. 인자 없이 돌리면 `lecture/*.md` 두 편을 모두 처리합니다. 하나만 뽑으려면 `./lecture/build-pdf.sh 개념워크북` 처럼 이름을 줍니다.
+>
+> `style.css` 는 week4 에서 그대로 가져온 것이 아닙니다. week4 의 파일에는 `table` · `pre` · `.alert` 에 `break-inside: avoid-page` 가 걸려 있어서 이 절의 규칙 1과 어긋났습니다. week5 의 `style.css` 는 그것을 빼고 `thead { display: table-header-group }` 과 `tbody tr { break-inside: avoid }` 로 대신하며, 한글 모노스페이스 폭은 `MonoKR` `@font-face` 의 `size-adjust: 120.4%` 로 맞춥니다.
 
 ---
 
@@ -274,7 +276,7 @@ terraform fmt -check -recursive
 
 | 항목 | 값 | 어디에 걸려 있는지 |
 |------|-----|-----------------|
-| 검증 환경 | Terraform 1.15.8 · AWS provider 6.60.0 · `ap-northeast-2` · `darwin_arm64` | 워크북 두 편의 끝 각주 |
+| 검증 환경 | Terraform 1.15.8 · AWS provider 6.61.0 · `ap-northeast-2` · `darwin_arm64` | 워크북 두 편의 끝 각주 |
 | `required_version` | `>= 1.9.0` | `practice/envs/prod/versions.tf` · `solution/envs/prod/versions.tf` |
 | provider 제약 | `~> 6.0` | 같은 두 파일 |
 | backend key | `week05/prod/terraform.tfstate` | week4 의 `week04/app/...` 을 두면 지난 주 state 를 인수합니다 |
@@ -284,6 +286,7 @@ terraform fmt -check -recursive
 | `state list` | **10줄** (리소스 9 + 데이터 소스 1) | 같은 세 곳. week4는 11줄이었습니다 |
 | 서브넷 주소 | `module.network.aws_subnet.public["ap-northeast-2a"]` | 실습워크북 ④ 지도 · B-5 |
 | EC2 비용 | 시간당 $0.0190 · 한 달 방치 약 $13.87 | 개념워크북 15번 · 실습워크북 도입 |
+| AMI 이름 필터 | `al2023-ami-2023.*-x86_64` | `modules/compute/main.tf` 양쪽 · 실습워크북 B-1 |
 
 `state list` 가 10줄인 것은 week4에 있던 `data.aws_availability_zones` 가 이 주차 코드에 없기 때문입니다. `subnet_cidrs` 의 key 가 AZ 이름이라 AWS 에 목록을 묻지 않습니다.
 
@@ -303,7 +306,7 @@ terraform fmt -check -recursive
 
 `.terraform.lock.hcl` 은 무시 목록에 넣지 않습니다. 다만 이 리포에는 아직 커밋된 lock 파일이 없습니다. 넣기로 한다면 `practice/envs/prod` 와 `solution/envs/prod` 양쪽에 함께 넣어야 합니다. 한쪽에만 있으면 두 폴더가 서로 다른 provider 버전으로 돌게 됩니다.
 
-week4 리포의 `.gitignore` 에는 있고 여기에는 없는 항목이 있습니다. `backend.hcl` · `*.pem` · `state.json` · `lecture/*.html` · `lecture/fonts/` 입니다. 해당 파일을 만들기 시작하면 `.gitignore` 에 먼저 추가하세요.
+week4 리포의 `.gitignore` 에 있던 `backend.hcl` · `*.pem` · `state.json` · `lecture/*.html` · `lecture/fonts/` 는 이 리포에도 모두 들어 있습니다. `lecture/*.pdf` 는 배포본이라 무시하지 않고 커밋합니다.
 
 ---
 
@@ -330,4 +333,4 @@ envs/prod (루트: provider · backend · variables · locals)
 
 의도적으로 남겨둔 것이 하나 있습니다. `modules/network/outputs.tf` 의 `public_subnet_id` 가 `values(aws_subnet.public)[0].id` 입니다. week4 개념워크북 14번이 쓰지 말라고 한 식인데, 여기서는 "모듈이 대신 골라주면 고르는 근거가 계약 밖으로 숨는다"를 가르치는 재료로 씁니다. 개념워크북 9번의 `[함정]` 과 실습워크북 B-6이 이것을 다루고 대안(`subnet_ids["..."]`)도 거기서 실습합니다. 코드를 고치려면 그 두 곳을 함께 고쳐야 합니다.
 
-`practice/` 와 `solution/` 은 같은 파일 집합을 공유하며 `main.tf` 세 개와 `envs/prod/outputs.tf` 만 내용이 다릅니다. 한쪽의 변수 이름이나 출력 이름을 고치면 반드시 다른 쪽과 워크북 두 편을 함께 고쳐야 합니다.
+`practice/` 와 `solution/` 이 내용까지 다른 파일은 다섯입니다. `main.tf` 세 개 · `envs/prod/outputs.tf` · `envs/prod/backend.tf`(`CHANGE-ME` 대 실제 값). 그리고 `practice/modules/*/README.md` 두 개는 실습 안내라서 `practice/` 에만 둡니다. 한쪽의 변수 이름이나 출력 이름을 고치면 반드시 다른 쪽과 워크북 두 편을 함께 고쳐야 합니다.
