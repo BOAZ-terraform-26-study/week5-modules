@@ -26,3 +26,20 @@ terraform.rc
 .DS_Store
 .idea/
 .vscode/
+
+# SSH 키: 이 주차에 만들지 않지만 실수 방지
+*.pem
+*.ppk
+id_rsa*
+
+# state 와 같은 등급의 비밀
+state.json
+*.tfstate.json
+tfplan.json
+
+# backend 설정 파일: 버킷 이름이 들어갑니다
+backend.hcl
+
+# PDF 빌드 중간 산출물 (PDF 자체는 배포본이라 커밋합니다)
+lecture/*.html
+lecture/fonts/
