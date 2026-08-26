@@ -3,7 +3,7 @@ data "aws_ami" "al2023" {
   owners      = ["amazon"]
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]
+    values = ["al2023-ami-2023.*-x86_64"]
   }
 }
 resource "aws_security_group" "web" {
@@ -28,5 +28,13 @@ resource "aws_instance" "web" {
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.web.id]
-  tags                   = merge(var.tags, { Name = "${var.name_prefix}-web" })
+  root_block_device {
+    volume_type           = "gp3"
+    volume_size           = 8
+    delete_on_termination = true
+  }
+  metadata_options {
+    http_tokens = "required"
+  }
+  tags = merge(var.tags, { Name = "${var.name_prefix}-web" })
 }
