@@ -1,0 +1,10 @@
+module.compute.data.aws_ami.al2023
+module.compute.aws_instance.web
+module.compute.aws_security_group.web
+module.network.aws_internet_gateway.this
+module.network.aws_route_table.public
+module.network.aws_route_table_association.public["ap-northeast-2a"]
+module.network.aws_route_table_association.public["ap-northeast-2c"]
+module.network.aws_subnet.public["ap-northeast-2a"]
+module.network.aws_subnet.public["ap-northeast-2c"]
+module.network.aws_vpc.this
