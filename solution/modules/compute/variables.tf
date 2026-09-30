@@ -7,7 +7,7 @@ variable "subnet_id" {
   type        = string
 }
 variable "my_ip" {
-  # 모듈 쪽에도 표시해 둡니다. 이 모듈을 다른 데서 쓸 때 부르는 쪽이
+  # 모듈 쪽에도 표시해 둡니다. 이 모듈을 다른 곳에서 쓸 때 호출하는 쪽이
   # sensitive 를 잊어도 CLI 출력에서 가려집니다.
   description = "22번을 열어줄 공인 IP. /32 는 모듈이 붙입니다"
   type        = string
